@@ -26,5 +26,5 @@ jobs:
 
       - name: Send email report via SendGrid
         env:
-          SENDGRID_API_KEY:${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         run: python send_email.py
