@@ -5,9 +5,11 @@ import requests
 SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
 
 def send_email():
+    # Read the weekly report content
     with open("weekly_report.md", "r", encoding="utf-8") as f:
         content = f.read()
 
+    # Build the SendGrid payload
     data = {
         "personalizations": [
             {
@@ -21,9 +23,16 @@ def send_email():
                 "type": "text/plain",
                 "value": content
             }
-        ]
+        ],
+        "tracking_settings": {
+            "click_tracking": {
+                "enable": False,
+                "enable_text": False
+            }
+        }
     }
 
+    # Send the email
     r = requests.post(
         "https://api.sendgrid.com/v3/mail/send",
         headers={
