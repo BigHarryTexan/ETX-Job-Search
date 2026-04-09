@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 import requests
 
 SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
@@ -8,6 +9,11 @@ def send_email():
     # Read the weekly report content
     with open("weekly_report.md", "r", encoding="utf-8") as f:
         content = f.read()
+
+    # Read the file again for attachment (binary-safe)
+    with open("weekly_report.md", "rb") as f:
+        attachment_bytes = f.read()
+        attachment_b64 = base64.b64encode(attachment_bytes).decode()
 
     # Build the SendGrid payload
     data = {
@@ -21,7 +27,18 @@ def send_email():
         "content": [
             {
                 "type": "text/plain",
-                "value": content
+                "value": "Your weekly ETX Job Watch Report is attached.\n\n"
+                         "This email includes:\n"
+                         "- Clean URLs (no tracking)\n"
+                         "- Full Markdown report as an attachment\n"
+            }
+        ],
+        "attachments": [
+            {
+                "content": attachment_b64,
+                "type": "text/markdown",
+                "filename": "weekly_report.md",
+                "disposition": "attachment"
             }
         ],
         "tracking_settings": {
