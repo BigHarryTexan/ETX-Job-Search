@@ -22,7 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run job watcher script
-        run: python job_watch.py
+        run: scraper.py
 
       - name: Send email report via SendGrid
         uses: peter-evans/sendgrid-action@v1
