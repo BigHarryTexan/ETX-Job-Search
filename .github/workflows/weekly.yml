@@ -1,1 +1,57 @@
+name: Weekly Job Watch
+
+on:
+  schedule:
+    - cron: "0 12 * * MON"
+    - cron: "0 12 * * THU"
+  workflow_dispatch:
+
+jobs:
+  run-job-watch:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4
+
+    - name: Run scraper
+      run: python src/scraper.py > scraped.json
+
+    - name: Compare results
+      run: |
+        python - << 'EOF'
+        import json
+        from src.compare import load_last_run, save_current_run, diff
+        from src.report import generate_report, save_report
+
+        with open("scraped.json") as f:
+            new_data = json.load(f)
+
+        old_data = load_last_run()
+        new_items = diff(new_data, old_data)
+        save_current_run(new_data)
+
+        report = generate_report(new_items)
+        save_report(report)
+        EOF
+
+    - name: Send email
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "ETX Job Watch Report"
+        to: clayharryman@gmail.com
+        from: clayharryman@gmail.com
+        attachments: weekly_report.md
 
