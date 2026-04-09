@@ -1,5 +1,5 @@
 import json
-from scraper import run_scraper
+from src.scraper import run_scraper
 
 def generate_markdown_report(data, output_file="weekly_report.md"):
     with open(output_file, "w", encoding="utf-8") as f:
