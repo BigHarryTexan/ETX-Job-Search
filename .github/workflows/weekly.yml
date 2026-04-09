@@ -25,11 +25,6 @@ jobs:
         run: python job_watch.py
 
       - name: Send email report via SendGrid
-        uses: sendgrid/sendgrid-action@v1
-        with:
-          api_key: ${{ secrets.SENDGRID_API_KEY }}
-          from: clayharryman@gmail.com
-          to: clayharryman@gmail.com
-          subject: "ETX Job Watch Report"
-          body: "Attached is your weekly report."
-          attachments: weekly_report.md
+        env:
+          SENDGRID_API_KEY:${{ secrets.SENDGRID_API_KEY }}
+        run: python send_email.py
